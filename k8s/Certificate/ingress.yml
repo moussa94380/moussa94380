@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: ingress-core
+  namespace: project
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              serviceName: service-web
+              servicePort: 443
+            path: /web
+  # This section is only required if TLS is to be enabled for the Ingress
+  tls:
+    - hosts:
+        - 20.74.64.127
+      secretName: project-ingress-tls

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-pod
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: web-pod
+    spec:
+      containers:
+      - name: web-cont
+        image: bart120/yv-web:1
+        readinessProbe:               # Sonde de preparation
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 120    # Durée attendue avant création de la sonde
+          timeoutSeconds: 5           # Durée attendue avant expiration de la sonde ( 5 secondes)
+        livenessProbe:                # Sondes de vivacité
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 130    # Durée attendue avant création de la sonde
+          timeoutSeconds: 10          # Durée attendue avant expiration de la sonde
+          failureThreshold: 10        # Nombre de redemarrage du pod si la sonde ne se crée pas
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 200m
+            memory: 400M
+          limits:
+            cpu: 200m
+            memory: 400M
+      restartPolicy: Always
+      
